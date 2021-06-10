@@ -37,7 +37,7 @@ class MakeRoad():
         self.max_flow = self.density_max*self.free_v*self.cong_v/(self.cong_v-self.free_v)
         self.p_c = self.max_flow/self.free_v
         
-    def homogeneous(self, source=0, sink=0):
+    def create_cells(self, source=0, sink=0):
         
         self.cell = []
         self.cell.append(MakeCell(self, source = source))
