@@ -1,0 +1,9 @@
+road_length=3
+density_max=120
+free_v=50
+num_lanes=2
+mean_time_gap=1.4
+simulation_time=
+dt=
+source=
+sink=

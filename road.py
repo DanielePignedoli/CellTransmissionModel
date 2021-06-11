@@ -13,14 +13,16 @@ class MakeRoad():
     road_length : float  #km
     density_max : float   #vehicles/km  (lane average)
     num_lanes : float = 1 #num of lanes
+    source : float = 0 #fraction of max_flow, acts as source flow
+    sink : float = 1 #same as source, manage the out flow
   
     
     #parameters to initialise
-    iteration : int = None
-    cell_length : float = None
-    n_cells : int = None
-    max_flow : float = None    #max flow per lane
-    p_c : float = None        #crtical density
+    iteration : int = field(init=False)
+    cell_length : float = field(init=False)
+    n_cells : int = field(init=False)
+    max_flow : float = field(init=False)    #max flow per lane
+    p_c : float = field(init=False)        #crtical density
     
     #method parameter
     dt : float = field(default=1/600) #hr
@@ -37,14 +39,13 @@ class MakeRoad():
         self.max_flow = self.density_max*self.free_v*self.cong_v/(self.cong_v-self.free_v)
         self.p_c = self.max_flow/self.free_v
         
-    def create_cells(self, source=0, sink=0):
+    def make_cells(self):
         
         self.cell = []
-        self.cell.append(MakeCell(self, source = source))
-        for i in range(self.n_cells):
+        for i in range(self.n_cells+2): # two more cells for source and sink
             self.cell.append(MakeCell(self))
-        self.cell.append(MakeCell(self, sink=sink))
-    
+        self.cell[0].demand = self.source*self.max_flow*self.num_lanes
+        self.cell[-1].supply = self.sink*self.max_flow*self.num_lanes
     
     def update_density(self):
 
@@ -84,9 +85,6 @@ class MakeCell():
     
     def __post_init__(self):
         self.num_lanes = self.road.num_lanes
-        self.make_source()
-        self.make_sink()
-        
         
     def update_capacity(self):
         self.capacity = self.road.max_flow*self.num_lanes*(1-self.bn_reduction)
@@ -120,16 +118,7 @@ class MakeCell():
             
         else:
             self.flow = (self.road.max_flow*(1-self.road.cong_v/self.road.free_v) + self.road.cong_v*self.p_avg)*self.num_lanes
-        
-        
-        
-    def make_source(self):
-        self.update_capacity()
-        self.demand = self.source * self.capacity
-        
-    def make_sink(self):
-        self.update_capacity()
-        self.supply = self.capacity * self.sink
+
 
 
     

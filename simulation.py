@@ -13,3 +13,4 @@ for var,value in config.values:
 
 #building the road
 road = MakeRoad(**params_dict)
+road.make_cells()
