@@ -1,9 +1,10 @@
+#prova di header
+variable = value
 road_length=3
 density_max=120
 free_v=50
-num_lanes=2
-mean_time_gap=1.4
-simulation_time=
+mean_time_gap=0.6
+simulation_time=0.0833
 dt=
 source=
 sink=

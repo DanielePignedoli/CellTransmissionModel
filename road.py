@@ -12,7 +12,6 @@ class MakeRoad():
     mean_time_gap : float #sec
     road_length : float  #km
     density_max : float   #vehicles/km  (lane average)
-    num_lanes : float = 1 #num of lanes
     source : float = 0 #fraction of max_flow, acts as source flow
     sink : float = 1 #same as source, manage the out flow
   
@@ -32,23 +31,25 @@ class MakeRoad():
     data : list =  field(default_factory = list)
     
     def __post_init__(self):
-        self.cong_v = -3600/(self.density_max * self.mean_time_gap)
+        #computation of all other useful variables
+        self.cong_v = -3600/(self.density_max * self.mean_time_gap) #negative velocity of traffic waves in congested regime
         self.iteration = round(self.simulation_time/self.dt)
         self.cell_length = self.free_v * self.dt
         self.n_cells = round(self.road_length/self.cell_length)
-        self.max_flow = self.density_max*self.free_v*self.cong_v/(self.cong_v-self.free_v)
-        self.p_c = self.max_flow/self.free_v
+        self.max_flow = self.density_max*self.free_v*self.cong_v/(self.cong_v-self.free_v) #lanes averaged maximum flow
+        self.p_c = self.max_flow/self.free_v #critical density, at which road change from fre to congested
         
     def make_cells(self):
-        
+        #this methods builds all the cells of the road
         self.cell = []
         for i in range(self.n_cells+2): # two more cells for source and sink
             self.cell.append(MakeCell(self))
-        self.cell[0].demand = self.source*self.max_flow*self.num_lanes
-        self.cell[-1].supply = self.sink*self.max_flow*self.num_lanes
+        self.cell[0].demand = self.source*self.max_flow
+        self.cell[-1].supply = self.sink*self.max_flow
     
     def update_density(self):
-
+        #this method update each cell's variables, then compue the density starting from the flows at cells' boundaries
+        
         for c in self.cell[1:-1]:
             c.update_capacity()
             c.flow_equilibrium()
@@ -58,8 +59,9 @@ class MakeRoad():
         demands = [c.demand for c in self.cell[:-1]]
         supplies = [c.supply for c in self.cell[1:]]
         
-        flows = np.minimum(demands, supplies)
-        for num, c in enumerate(self.cell[1:-1]):
+        flows = np.minimum(demands, supplies) # flows at bounaries
+        
+        for num, c in enumerate(self.cell[1:-1]): #compute new density
             c.density = c.density +(flows[num] - flows[num+1])*self.dt/self.cell_length
 
         return np.array([c.density for c in self.cell[1:-1]])
@@ -82,12 +84,10 @@ class MakeCell():
     #source&sink
     source : float = field(default = 0)  # fraction of capacity
     sink : float = field(default = 1)  # fraction of capacity
-    
-    def __post_init__(self):
-        self.num_lanes = self.road.num_lanes
+
         
     def update_capacity(self):
-        self.capacity = self.road.max_flow*self.num_lanes*(1-self.bn_reduction)
+        self.capacity = self.road.max_flow*(1-self.bn_reduction)
 
     def update_supply(self):
         if self.p_avg > self.road.p_c:
@@ -104,20 +104,20 @@ class MakeCell():
     
     def flow_equilibrium(self):
         #p_avg is the lane averaged density
-        self.p_avg = self.density/self.num_lanes
+        self.p_avg = self.density
         
         #return the total flow in the cell, depending on the denisty (from the fundamental diagram)
         if self.p_avg<0:
             self.flow = 0
             
         elif self.p_avg <= self.road.p_c:
-            self.flow = self.road.free_v*self.p_avg*self.num_lanes
+            self.flow = self.road.free_v*self.p_avg
             
         elif self.p_avg > self.road.density_max:
             self.flow = 0
             
         else:
-            self.flow = (self.road.max_flow*(1-self.road.cong_v/self.road.free_v) + self.road.cong_v*self.p_avg)*self.num_lanes
+            self.flow = (self.road.max_flow*(1-self.road.cong_v/self.road.free_v) + self.road.cong_v*self.p_avg)
 
 
 
