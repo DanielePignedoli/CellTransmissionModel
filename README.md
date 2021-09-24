@@ -4,7 +4,7 @@
 The complex system of vehicular runoff is studied with different models. Some macroscopic, which consider traffic as a continuum fluid, and some microscopic, which consider the relation of a driver with adjacent vehicles.
 Cell transmission model (CTM) is based on a class of macroscopic model called LWRs (Lighthill-Whitham-Richards model).
 
-The variables of the each macroscopic model are:
+The variables of each macroscopic model are:
 * flow
 * density
 * mean speed
@@ -17,10 +17,21 @@ and also are subjected to a continuity equation:
 
 ![](https://latex.codecogs.com/gif.latex?\dfrac{\partial&space;\rho}{\partial&space;t}&space;+&space;\dfrac{\partial&space;q}{\partial&space;x}&space;=&space;0)
 
-The assunption of LWR models is that the flow is a funciton only of the density. The flow-density relation is called _fundamental diagram_.
+The assunption of LWR models is that the flow is a funciton only of the density.
+
+![](https://latex.codecogs.com/gif.latex?q&space;=&space;q(\rho))
+
+then:
+
+![](https://latex.codecogs.com/gif.latex?\dfrac{\partial&space;\rho}{\partial&space;t}&space;+&space;\dfrac{dq}{d\rho}\dfrac{\partial&space;\rho}{\partial&space;x}&space;=&space;0)
+
+The flow-density relation is called _fundamental diagram_.
  CTM uses the simplest form of fundamental diagram, which has a triangular form:
+ 
  ![](images/triang.png)
  
+The diagram has only two derivatives, which correspond to the only two possible speeds of propagation of the traffic wave. Above a critical density the wave will move upstream.
+
 The numerical method consist in a discretization of space and time, then a recursive algorithm is applied:
 1. **compute _supply_ and _demand_ for each cell**
 
@@ -83,3 +94,6 @@ road_length | density_max | free_v |mean_time_gap | simulation_time | source | s
 ------------|-------------|--------|--------------|-----------------|--------|------
 3 km | 120 veh/km | 50 km/h | 0.6 s | 0.2 h | 0.8 | 1
 
+![](images/traffic_light.png)
+
+you can se how for the chosen source flow, the pause between the two red lights is not long enough for the traffic to flow out completely.
