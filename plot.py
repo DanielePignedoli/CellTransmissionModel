@@ -30,5 +30,5 @@ def plot_data(road, filename : str = None, cmap = 'PuBu'):
         fig.savefig("plots/" + filename)
     else:
         date = datetime.now().strftime("%d-%b-%Y_%H:%M:%S")
-        fig.savefig('plots/density_plot_ '+date+'.png')
+        fig.savefig('plots/density_plot_'+date+'.png')
 

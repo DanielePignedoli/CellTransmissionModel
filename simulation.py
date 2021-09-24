@@ -28,11 +28,12 @@ for i in range(road.iteration):
         #check time
         if i in range(row.ti_index, row.tf_index):
             #check space
-            for c in road.cell[row.start_index:row.end_index]:
+            for c in road.cell[row.start_index:row.end_index+1]:
                 c.bn_reduction += row.strenght
             
     road.update_density()
     road.data.append([c.density for c in road.cell[1:-1]])
 
 filename = str(input("filename of the output plot, write also the extension (png, jpg):"))
-plot_data(road)
+plot_data(road, filename)
+
