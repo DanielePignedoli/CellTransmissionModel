@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from road import MakeRoad
-from plot import plot_data, plot3d
+from plot import plot_data
 from config import read_params, read_bottlenecks
 
 #reading model parameters from configuration file
@@ -33,6 +33,5 @@ for i in range(road.iteration):
             
     road.update_density()
     road.data.append([c.density for c in road.cell[1:-1]])
-    
+
 plot_data(road)
-plot3d(road)
