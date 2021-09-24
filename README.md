@@ -52,9 +52,34 @@ To modify the flow in the road, for example if we want to simulate a speed limit
 
 # How to run a simulation
 To start a simulation you have first to set the required parameters of the model which are divided in two section:
-* model parameters
-* bottlenecks parameters
+* model parameters (_**config.csv**_)
+* bottlenecks parameters (_**bottlenecks.csv**_)
 
-The necessary instructions are in the headers of the \*.csv files. 
+The necessary instructions are in the headers of the \*.csv files. Then you can already run _**simulation.py**_ and a plot with the density evolution of your road will be created as _filename.png_ in the **plots/** directory. If you will not pass a filename for your output, by just pressing enter, the file will be named using the current date.
 
- 
+**IMPORTANT:** the road is always empty at the beginning, and is filled up in time proportional to the speed prameter. 
+
+### Others python files of the project
+
+* **plot.py** only contains the function used to display the result
+* **road.py** contains the two classes used by the simulation:
+
+   _MakeRoad_ creates a road object, which has all the model parameters, and that will be filled with cells
+  
+   _MakeCell_ creates a cell object, which has instead the physical variables we use to determine the density evolution
+* **config.py** has two functions for reading .csv files
+
+**images/** is just a folder for images used in README.md
+
+## Example
+Here an example of simulation of a traffic light that turns red after 2 minute and after 5 minute.
+
+start|end|strenght|time_i|time_f
+-----|---|--------|------|------
+1.5 km|1.5 km|1|2 min|3 min
+1.5 km|1.5 km|1|5 min|6 min
+
+road_length | density_max | free_v |mean_time_gap | simulation_time | source | sink
+------------|-------------|--------|--------------|-----------------|--------|------
+3 km | 120 veh/km | 50 km/h | 0.6 s | 0.2 h | 0.8 | 1
+
