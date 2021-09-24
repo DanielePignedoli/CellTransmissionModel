@@ -17,11 +17,11 @@ and also are subjected to a continuity equation:
 
 ![](https://latex.codecogs.com/gif.latex?\dfrac{\partial&space;\rho}{\partial&space;t}&space;+&space;\dfrac{\partial&space;q}{\partial&space;x}&space;=&space;0)
 
-The assunption of LWR models is that the flow is a funciton only of the density. The flow-density raltion is called _fundamental diagram_.
+The assunption of LWR models is that the flow is a funciton only of the density. The flow-density relation is called _fundamental diagram_.
  CTM uses the simplest form of fundamental diagram, which has a triangular form:
  ![](images/triang.png)
  
-The numerical method consist in a discretization of space and time, then a recursive algrithm is applied:
+The numerical method consist in a discretization of space and time, then a recursive algorithm is applied:
 1. **compute _supply_ and _demand_ for each cell**
 
     ![](https://latex.codecogs.com/gif.latex?S_{k}(t)&space;=&space;q_k(t)\qquad\rho&space;_k&space;>&space;\rho&space;_C)
@@ -51,4 +51,10 @@ The numerical method consist in a discretization of space and time, then a recur
 To modify the flow in the road, for example if we want to simulate a speed limit or a traffic light or some bottlenekcks in general, we act on the capacity _C_ of the cell. We will call the reduction in capacity _bottleneck strength_. 
 
 # How to run a simulation
-To start a 
+To start a simulation you have first to set the required parameters of the model which are divided in two section:
+* model parameters
+* bottlenecks parameters
+
+The necessary instructions are in the headers of the \*.csv files. 
+
+ 
