@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 
 def plot_data(road, filename : str = None, cmap = 'PuBu'):
@@ -26,7 +27,8 @@ def plot_data(road, filename : str = None, cmap = 'PuBu'):
         
     fig.tight_layout()
     if filename:
-        fig.savefig(filename)
+        fig.savefig("plots/" + filename)
     else:
-        fig.savefig('density_plot.png')
+        date = datetime.now().strftime("%d-%b-%Y_%H:%M:%S")
+        fig.savefig('plots/density_plot_ '+date+'.png')
 

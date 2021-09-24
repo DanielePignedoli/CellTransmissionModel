@@ -34,4 +34,5 @@ for i in range(road.iteration):
     road.update_density()
     road.data.append([c.density for c in road.cell[1:-1]])
 
+filename = str(input("filename of the output plot, write also the extension (png, jpg):"))
 plot_data(road)
