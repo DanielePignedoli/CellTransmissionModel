@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 
-def read_params(file = 'config.csv'):
+def read_params(file = 'configuration.csv'):
     #reading model parameters from configuration file
     config = pd.read_csv('config.csv', sep = '=', header=2)
     config = config.dropna()
