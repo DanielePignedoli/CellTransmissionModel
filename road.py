@@ -64,7 +64,6 @@ class MakeRoad():
         for num, c in enumerate(self.cell[1:-1]): #compute new density
             c.density = c.density +(flows[num] - flows[num+1])*self.dt/self.cell_length
 
-        return np.array([c.density for c in self.cell[1:-1]])
     
 @dataclass
 class MakeCell():
