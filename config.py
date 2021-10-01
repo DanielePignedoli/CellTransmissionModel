@@ -4,7 +4,7 @@ import pandas as pd
 
 def read_params(file = 'configuration.csv'):
     #reading model parameters from configuration file
-    config = pd.read_csv('config.csv', sep = '=', header=2)
+    config = pd.read_csv(file, sep = '=', header=2)
     config = config.dropna()
     
     params_dict = {}
@@ -15,7 +15,7 @@ def read_params(file = 'configuration.csv'):
 
 def read_bottlenecks(road, file = 'bottlenecks.csv'):
     #reading bottleneks, and converting units in model indexes
-    bns = pd.read_csv('bottlenecks.csv', sep=',', header = 1)
+    bns = pd.read_csv(file, sep=',', header = 1)
     bns['start_index']= bns['start'].apply(lambda x : round(x/road.cell_length))
     bns['end_index']= bns['end'].apply(lambda x : round(x/road.cell_length))
     bns['ti_index']= bns['time_i'].apply(lambda t : round(t/road.dt/60))
