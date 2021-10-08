@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
-from datetime import datetime
 
-
-def plot_data(road, filename : str = None, cmap = 'PuBu'):
+def plot_data(road, filename):
     #save -> file name of the output image
     fig, ax = plt.subplots(figsize=(8,5))
-    cmap = plt.get_cmap(cmap)
-    
-    im = ax.pcolormesh(road.data, cmap = cmap)
+    im = ax.pcolormesh(road.data, cmap = 'PuBu')
     fig.colorbar(im)
     
     #title
@@ -26,9 +22,8 @@ def plot_data(road, filename : str = None, cmap = 'PuBu'):
     ax.set_ylabel('time (min)', fontsize = 12)
         
     fig.tight_layout()
-    if filename:
-        fig.savefig("plots/" + filename)
-    else:
-        date = datetime.now().strftime("%d-%b-%Y_%H:%M:%S")
-        fig.savefig('plots/density_plot_'+date+'.png')
+    
+    fig.savefig(filename)
+    
+
 
