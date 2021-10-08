@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 @dataclass
-class MakeRoad():
+class Road():
         
     #road params
     free_v : float  #km/hr
@@ -43,7 +43,7 @@ class MakeRoad():
         #this methods builds all the cells of the road
         self.cell = []
         for i in range(self.n_cells+2): # two more cells for source and sink
-            self.cell.append(MakeCell(self))
+            self.cell.append(Cell(self))
         self.cell[0].demand = self.source*self.max_flow
         self.cell[-1].supply = self.sink*self.max_flow
     
@@ -64,12 +64,36 @@ class MakeRoad():
         for num, c in enumerate(self.cell[1:-1]): #compute new density
             c.density = c.density +(flows[num] - flows[num+1])*self.dt/self.cell_length
 
-    
+    def update_bottlenecks(self, bottlenecks, it):
+        #setting to zero bottlenecks strength
+        for c in self.cell:
+            c.bn_reduction = 0
+        
+        #check bottlenecks
+        for row in bottlenecks.itertuples():
+            #check bottlenecks' time position
+            if it in range(row.ti_index, row.tf_index):
+                #check bottlenecks' space position
+                if self.cell[row.start_index:row.end_index]:
+                    for c in self.cell[row.start_index:row.end_index]:
+                        c.bn_reduction += row.strength
+                #if for a traffic light one put same postion for start and end
+                else:
+                    for c in self.cell[row.start_index:row.end_index+1]:
+                        c.bn_reduction += row.strength
+                             
+    def simulation(self,bottlenecks):
+        self.data.append([c.density for c in self.cell[1:-1]])
+        for i in range(self.iteration):
+            self.update_bottlenecks(bottlenecks,i)
+            self.update_density()
+            self.data.append([c.density for c in self.cell[1:-1]])
+
 @dataclass
-class MakeCell():
+class Cell():
     
     #road
-    road : MakeRoad
+    road : Road
     
     #cell variables
     density : float = field(default=0)
