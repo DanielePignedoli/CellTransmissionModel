@@ -1,46 +1,49 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from road import MakeRoad
+from road import Road
 from plot import plot_data
 from config import read_params, read_bottlenecks
+from argparse import ArgumentParser
+from os import mkdir
+from shutil import copyfile
+from datetime import datetime
+
+parser = ArgumentParser(description='Simulate the density evolution of a road') 
+parser.add_argument('-f','--filename',
+                    help='Filename of the output')
+parser.add_argument('-p','--params',
+                    help='csv file with model parameters')
+parser.add_argument('-b','--bottlenecks',
+                    help='csv file with bottlenecks parameters')
+args = parser.parse_args()
 
 #reading model parameters from configuration file
-params = read_params()
+params = read_params(args.params)
 
 #building the road
-road = MakeRoad(**params)
+road = Road(**params)
 road.make_cells()
 
 #reading bottleneks
+bns = read_bottlenecks(road, args.bottlenecks)
 
-bns = read_bottlenecks(road)
-
-road.data.append([c.density for c in road.cell[1:-1]])
-for i in range(road.iteration):
-    
-    #setting to zero bottlenecks strenght
-    for c in road.cell:
-        c.bn_reduction = 0
-    
-    #check bottlenecks
-    for row in bns.itertuples():
-        #check bottlenecks' time position
-        if i in range(row.ti_index, row.tf_index):
-            #check bottlenecks' space position
-            if road.cell[row.start_index:row.end_index]:
-                for c in road.cell[row.start_index:row.end_index]:
-                    c.bn_reduction += row.strenght
-            #if for a traffic light one put same postion for start and end
-            else:
-                for c in road.cell[row.start_index:row.end_index+1]:
-                    c.bn_reduction += row.strenght
-                
-            
-    road.update_density()
-    road.data.append([c.density for c in road.cell[1:-1]])
-
-filename = str(input("filename of the output plot, write also the extension (png, jpg):"))
-plot_data(road, filename)
+#simulation with the chosen bottlenecks
+road.simulation(bns)
 
 
+#saving output
+if args.filename:
+    name = args.filename
+else:
+    date = datetime.now().strftime("%d-%b-%Y_%H:%M:%S")
+    name = 'density_plot_'+date
+
+#directory with output and configuration
+directory_name ='output/'+name
+mkdir(directory_name)
+
+plot_data(road, directory_name+'/plot.png')
+
+copyfile(args.params, directory_name+'/configuration.csv')
+copyfile(args.bottlenecks, directory_name+'/bottlenecks.csv')
