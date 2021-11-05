@@ -4,8 +4,13 @@ from dataclasses import dataclass, field
 import numpy as np
 
 @dataclass
-class Road():
-        
+class Road:
+    """
+    Build a Road Object.
+    
+    The class has methods for creating cells, updating variables and
+    runnning simulations.
+    """
     #road params
     free_v : float  #km/hr
     cong_v : float = field(init=False) #km/hr
@@ -31,7 +36,9 @@ class Road():
     data : list =  field(default_factory = list)
     
     def __post_init__(self):
-        #computation of all other useful variables
+        """
+        Initialize several model parameters.
+        """
         self.cong_v = -3600/(self.density_max * self.mean_time_gap) #negative velocity of traffic waves in congested regime
         self.iteration = round(self.simulation_time/self.dt)
         self.cell_length = self.free_v * self.dt
@@ -40,7 +47,11 @@ class Road():
         self.p_c = self.max_flow/self.free_v #critical density, at which road change from fre to congested
         
     def make_cells(self):
-        #this methods builds all the cells of the road
+        """
+        Build all the cells of the road.
+        
+        Return a list of Cell objects. The number of cells and size depends on the model parmeters.
+        """
         self.cell = []
         for i in range(self.n_cells+2): # two more cells for source and sink
             self.cell.append(Cell(self))
@@ -48,8 +59,12 @@ class Road():
         self.cell[-1].supply = self.sink*self.max_flow
     
     def update_density(self):
-        #this method update each cell's variables, then compue the density starting from the flows at cells' boundaries
+        """
+        Compute the new density of each cell.
         
+        This method update each cell's variables, then compue the density
+        starting from the flows at boundaries.
+        """        
         for c in self.cell[1:-1]:
             c.update_capacity()
             c.flow_equilibrium()
@@ -65,6 +80,19 @@ class Road():
             c.density = c.density +(flows[num] - flows[num+1])*self.dt/self.cell_length
 
     def update_bottlenecks(self, bottlenecks, it):
+        """
+        Return the bottlenecks strength for each cell.
+        
+        Depending on time, so the iteration step, this method updates cells' bottlenecks
+        dependig on the bottlenecks configuration file.
+        
+        Parameters
+        ----------
+        bottlenecks : pandas.core.frame.DataFrame
+            Dataframe with info about bottlenecks position ad duration.
+        it : int
+            Iteration step number.
+        """
         #setting to zero bottlenecks strength
         for c in self.cell:
             c.bn_reduction = 0
@@ -83,6 +111,14 @@ class Road():
                         c.bn_reduction += row.strength
                              
     def simulation(self,bottlenecks):
+        """
+        Run the simulation for the actual configuration.
+        
+        Parameters
+        ----------
+        bottlenecks : pandas.core.frame.DataFrame
+            Dataframe with info about bottlenecks position ad duration.
+        """
         self.data.append([c.density for c in self.cell[1:-1]])
         for i in range(self.iteration):
             self.update_bottlenecks(bottlenecks,i)
@@ -90,7 +126,14 @@ class Road():
             self.data.append([c.density for c in self.cell[1:-1]])
 
 @dataclass
-class Cell():
+class Cell:
+    """
+    Build a cell object.
+    
+    The Cell object is provided with parameters for density, flow, supply, demand,
+    and a value for the strength of the possible bottlenecks. It interacts with 
+    the other cells thanks to the Road Class.
+    """
     
     #road
     road : Road
@@ -110,37 +153,54 @@ class Cell():
 
         
     def update_capacity(self):
+        """
+        Compute the Capacity at given density.
+        
+        Return the maximum flow that can pass through a cell,
+        depending on stength of the bootlenecks
+        """
         self.capacity = self.road.max_flow*(1-self.bn_reduction)
 
     def update_supply(self):
-        if self.p_avg > self.road.p_c:
+        """
+        Compute the Suppply at given density.
+        
+        Return the flow that the cell can accomodate.
+        """
+        if self.density > self.road.p_c:
             self.supply = self.flow
         else:
             self.supply = self.capacity
     
     def update_demand(self):
-        if self.p_avg <= self.road.p_c:
+        """
+        Compute the Demand at given density.
+        
+        Return the flow that the cell would offer to the next.
+        """
+        if self.density <= self.road.p_c:
             self.demand = self.flow
         else:
             self.demand = self.capacity
         
     
     def flow_equilibrium(self):
-        #p_avg is the lane averaged density
-        self.p_avg = self.density
+        """
+        Compute the flow at given density.
         
-        #return the total flow in the cell, depending on the denisty (from the fundamental diagram)
-        if self.p_avg<0:
+        Return the total flow in the cell, depending on the fundamental diagram.
+        """
+        if self.density<0:
             self.flow = 0
             
-        elif self.p_avg <= self.road.p_c:
-            self.flow = self.road.free_v*self.p_avg
+        elif self.density <= self.road.p_c:
+            self.flow = self.road.free_v*self.density
             
-        elif self.p_avg > self.road.density_max:
+        elif self.density > self.road.density_max:
             self.flow = 0
             
         else:
-            self.flow = (self.road.max_flow*(1-self.road.cong_v/self.road.free_v) + self.road.cong_v*self.p_avg)
+            self.flow = (self.road.max_flow*(1-self.road.cong_v/self.road.free_v) + self.road.cong_v*self.density)
 
 
 
