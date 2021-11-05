@@ -3,7 +3,23 @@
 import pandas as pd
 
 def read_params(file = 'configuration.csv'):
-    #reading model parameters from configuration file
+    """
+    Read model parameters from configuration file.
+    
+    Read paramaters from a csv file, with '=' as separator, then convert 
+    them into dictionary.
+    
+    Parameters
+    ----------
+    file : str
+        Path of the cofiguration file.
+        
+    Returns
+    -------
+    dict
+        Dictionary with the assigned parameters.
+    """
+    
     config = pd.read_csv(file, sep = '=', header=2)
     config = config.dropna()
     
@@ -14,7 +30,27 @@ def read_params(file = 'configuration.csv'):
     return params_dict
 
 def read_bottlenecks(road, file = 'bottlenecks.csv'):
-    #reading bottleneks, and converting units in model indexes
+    """
+    "Read bottleneks cconvert units in model indexes.
+    
+    Read paramaters from a csv file, converting them into a pandas dataframe with
+    a row for each bottleneck.
+    
+    The position of bottlenecks is then converted into a cell index, and also
+    the lifetime is coverted into iteration indexes.
+    
+    Parameters
+    ----------
+    road : road.Road
+        Road object of the actual simulation.
+    file : str
+        Path of the cofiguration file.
+        
+    Returns
+    -------
+    pandas.DataFrame
+        Dataframe with strength, position and lifetime of each bottlenecks.
+    """
     bns = pd.read_csv(file, sep=',', header = 1)
     bns['start_index']= bns['start'].apply(lambda x : round(x/road.cell_length))
     bns['end_index']= bns['end'].apply(lambda x : round(x/road.cell_length))
