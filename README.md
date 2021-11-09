@@ -66,7 +66,11 @@ To start a simulation you have first to set the required parameters of the model
 * model parameters (_**config.csv**_)
 * bottlenecks parameters (_**bottlenecks.csv**_)
 
-The necessary instructions are in the headers of the \*.csv files. Then you can already run _**simulation.py**_ and a plot with the density evolution of your road will be created as _filename.png_ in the **plots/** directory. If you will not pass a filename for your output, by just pressing enter, the file will be named using the current date.
+The necessary instructions are in the headers of the \*.csv files. After compiling the configuration files you can run _**simulation.py**_ from command line typing _$python simulation.py -f <output_name> -p <configuration_file> -b <bottlenecks_file>_.Flags corrspond respectively to _--filename_, _--params_ and _--bottlenecks_.
+
+e.g. $python simulation.py -f traffic_light -p configuration.csv -b bottlenecks.csv
+
+A directory with name _<output_name>_  is now created, it contains the configuration files and a png plot with with the density evolution of your road . If you will not pass a filename for your output the file will be named using the current date.
 
 **IMPORTANT:** the road is always empty at the beginning, and is filled up in time proportional to the speed prameter. 
 
@@ -75,12 +79,12 @@ The necessary instructions are in the headers of the \*.csv files. Then you can 
 * **plot.py** only contains the function used to display the result
 * **road.py** contains the two classes used by the simulation:
 
-   _MakeRoad_ creates a road object, which has all the model parameters, and that will be filled with cells
+   _Road_ creates a road object, which has all the model parameters, and that will be filled with cells
   
-   _MakeCell_ creates a cell object, which has instead the physical variables we use to determine the density evolution
+   _Cell_ creates a cell object, which has instead the physical variables we use to determine the density evolution
 * **config.py** has two functions for reading .csv files
 
-**images/** is just a folder for images used in README.md
+**images/** is just a folder for images used in README.md.
 
 ## Example
 Here an example of simulation of a traffic light that turns red after 2 minute and after 5 minute.
