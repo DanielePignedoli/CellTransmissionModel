@@ -1,0 +1,3 @@
+#the structure is that of a dataframe, start and end columns refer to start and end coordinates (kilometers) of a bottleneks, and so time_i and time_f (minutes), the strenght of the bottlenek is a value in [0,1]. each line correspond to a bottleneck  
+start,end,strength,time_i,time_f
+
